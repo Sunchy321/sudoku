@@ -1,3 +1,5 @@
+const path = require('path');
+
 module.exports = {
   // https://eslint.org/docs/user-guide/configuring#configuration-cascading-and-hierarchy
   // This option interrupts the configuration hierarchy at this file
@@ -9,7 +11,8 @@ module.exports = {
   // `parser: 'vue-eslint-parser'` is already included with any 'plugin:vue/**' config and should be omitted
   parserOptions: {
     parser: require.resolve('@typescript-eslint/parser'),
-    extraFileExtensions: [ '.vue' ]
+      extraFileExtensions: ['.vue'],
+      project: path.join(__dirname, './tsconfig.json'),
   },
 
   env: {
@@ -34,8 +37,7 @@ module.exports = {
     // 'plugin:vue/vue3-strongly-recommended', // Priority B: Strongly Recommended (Improving Readability)
     // 'plugin:vue/vue3-recommended', // Priority C: Recommended (Minimizing Arbitrary Choices and Cognitive Overhead)
 
-    'airbnb-base'
-    
+      'airbnb-base'
   ],
 
   plugins: [
@@ -44,9 +46,18 @@ module.exports = {
 
     // https://eslint.vuejs.org/user-guide/#why-doesn-t-it-work-on-vue-files
     // required to lint *.vue files
-    'vue'
-    
-  ],
+      'vue'
+    ],
+
+    overrides: [
+        {
+            files: ['.eslintrc.cjs', 'quasar.conf.js'],
+            rules: {
+                'import/no-extraneous-dependencies': 'off',
+                '@typescript-eslint/no-var-requires': 'off',
+            },
+        },
+    ],
 
   globals: {
     ga: 'readonly', // Google Analytics
@@ -63,41 +74,140 @@ module.exports = {
 
   // add your custom rules here
   rules: {
-    
-    'no-plusplus': 'off',
-    'no-param-reassign': 'off',
-    'no-void': 'off',
-    'no-nested-ternary': 'off',
-    'max-classes-per-file': 'off',
+      'arrow-parens': 'off',
+      'brace-style': 'off',
+      'class-methods-use-this': 'off',
+      'comma-dangle': 'off',
+      'comma-spacing': 'off',
+      'func-call-spacing': 'off',
+      'func-names': 'off',
+      'indent': 'off',
+      'keyword-spacing': 'off',
+      'lines-between-class-members': 'off',
+      'max-classes-per-file': 'off',
+      'no-await-in-loop': 'off',
+      'no-console': 'off',
+      'no-continue': 'off',
+      'no-else-return': 'off',
+      'no-implied-eval': 'off',
+      'no-lonely-if': 'off',
+      'no-nested-ternary': 'off',
+      'no-param-reassign': 'off',
+      'no-shadow': 'off',
+      'no-underscore-dangle': 'off',
+      'no-unused-expressions': 'off',
+      'no-use-before-define': 'off',
+      'object-curly-spacing': 'off',
+      'quotes': 'off',
+      'semi': 'off',
+      'space-before-function-paren': 'off',
+      'space-infix-ops': 'off',
 
-    'no-shadow': 'off',
-    '@typescript-eslint/no-shadow': 'error',
+      'key-spacing': ['warn', { beforeColon: false, afterColon: true, align: 'value' }],
+      'no-void': ['error', { allowAsStatement: true }],
+      'quote-props': ['warn', 'consistent-as-needed'],
 
-    'import/first': 'off',
-    'import/named': 'error',
-    'import/namespace': 'error',
-    'import/default': 'error',
-    'import/export': 'error',
+      'max-len': ['warn', 150, 4, {
+          ignoreUrls: true,
+          ignoreComments: false,
+          ignoreRegExpLiterals: true,
+          ignoreStrings: true,
+          ignoreTemplateLiterals: true,
+      }],
+
+      'generator-star-spacing': ['error', {
+          before: false,
+          after: true,
+          anonymous: 'neither',
+          method: { before: false, after: true },
+      }],
+
+      'prefer-destructuring': ['warn', {
+          array: false,
+          object: true,
+      }],
+
+      'no-restricted-syntax': ['error', 'ForInStatement', 'LabeledStatement', 'WithStatement'],
+
     'import/extensions': 'off',
     'import/no-unresolved': 'off',
-    'import/no-extraneous-dependencies': 'off',
+      'import/order': 'off',
     'import/prefer-default-export': 'off',
-    
-    'prefer-promise-reject-errors': 'off',
 
-    quotes: ['warn', 'single', { avoidEscape: true }],
+      '@typescript-eslint/explicit-module-boundary-types': 'error',
+      '@typescript-eslint/func-call-spacing': 'warn',
+      '@typescript-eslint/keyword-spacing': 'warn',
+      '@typescript-eslint/no-confusing-void-expression': 'error',
+      '@typescript-eslint/no-empty-function': 'off',
+      '@typescript-eslint/no-empty-interface': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-for-in-array': 'error',
+      '@typescript-eslint/no-inferrable-types': 'error',
+      '@typescript-eslint/no-non-null-assertion': 'off',
+      '@typescript-eslint/no-unused-expressions': 'error',
+      '@typescript-eslint/no-use-before-define': 'error',
+      '@typescript-eslint/prefer-for-of': 'warn',
+      '@typescript-eslint/prefer-function-type': 'warn',
+      '@typescript-eslint/prefer-optional-chain': 'warn',
+      '@typescript-eslint/semi': 'error',
+      '@typescript-eslint/sort-type-constituents': 'warn',
+      '@typescript-eslint/space-infix-ops': 'warn',
+      '@typescript-eslint/type-annotation-spacing': 'warn',
+      '@typescript-eslint/no-implied-eval': 'warn',
+      '@typescript-eslint/no-misused-promises': 'warn',
+      '@typescript-eslint/prefer-includes': 'warn',
+      '@typescript-eslint/prefer-nullish-coalescing': 'warn',
+      '@typescript-eslint/prefer-regexp-exec': 'warn',
+      '@typescript-eslint/prefer-string-starts-ends-with': 'warn',
+      '@typescript-eslint/promise-function-async': 'warn',
+      '@typescript-eslint/restrict-plus-operands': 'error',
+      '@typescript-eslint/switch-exhaustiveness-check': 'error',
 
-    // this rule, if on, would require explicit return type on the `render` function
-    '@typescript-eslint/explicit-function-return-type': 'off',
+      '@typescript-eslint/brace-style': ['warn', '1tbs', { allowSingleLine: true }],
+      '@typescript-eslint/comma-dangle': ['warn', 'always-multiline'],
+      '@typescript-eslint/comma-spacing': ['warn', { before: false, after: true }],
+      '@typescript-eslint/indent': ['warn', 4, { SwitchCase: 0 }],
+      '@typescript-eslint/lines-between-class-members': ['warn', 'always', { exceptAfterSingleLine: true }],
+      '@typescript-eslint/no-unused-vars': ['warn', { varsIgnorePattern: '^(_{1,3})$' }],
+      '@typescript-eslint/object-curly-spacing': ['warn', 'always'],
+      '@typescript-eslint/quotes': ['error', 'single'],
 
-    // in plain CommonJS modules, you can't use `import foo = require('foo')` to pass this rule, so it has to be disabled
-    '@typescript-eslint/no-var-requires': 'off',
+      '@typescript-eslint/member-delimiter-style': ['warn', {
+          multiline: {
+              delimiter: 'semi',
+              requireLast: true,
+          },
+          singleline: {
+              delimiter: 'comma',
+              requireLast: false,
+          },
+          multilineDetection: 'brackets',
+      }],
 
-    // The core 'no-unused-vars' rules (in the eslint:recommended ruleset)
-    // does not work with type definitions
-    'no-unused-vars': 'off',
+      '@typescript-eslint/no-shadow': ['error', {
+          allow: [
+              'a', 'b', 'c', 'd', 'e',
+              'f', 'g', 'h', 'i', 'j',
+              'k', 'l', 'm', 'n', 'o',
+              'p', 'q', 'r', 's', 't',
+              'u', 'v', 'w', 'x', 'y', 'z',
+          ],
+      }],
 
-    // allow debugger during development only
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
+      '@typescript-eslint/space-before-function-paren': ['warn', {
+          anonymous: 'always',
+          named: 'never',
+          asyncArrow: 'always',
+      }],
+
+      'vue/max-attributes-per-line': 'off',
+      'vue/multi-word-component-names': 'off',
+      'vue/singleline-html-element-content-newline': 'off',
+      'vue/multiline-html-element-content-newline': 'off',
+      'vue/component-tags-order': 'off',
+
+      'vue/block-order': ['warn', { order: ['template', 'script', 'style'] }],
+      'vue/html-indent': ['warn', 4],
+      'vue/no-unused-properties': ['warn', { groups: ['setup'] }],
   }
 }
