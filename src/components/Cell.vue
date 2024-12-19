@@ -8,7 +8,7 @@
             >{{ value }}</div>
         </template>
         <template v-else>
-            <div class="value">{{ model.value }}</div>
+            <div class="value" :class="{ preset: isPreset }">{{ model.value }}</div>
         </template>
     </div>
 </template>
@@ -27,6 +27,8 @@ export type CellModel = {
 const model = defineModel<CellModel>({ required: true });
 
 const type = computed(() => model.value?.type ?? 'candidate');
+
+const isPreset = computed(() => type.value === 'preset');
 
 const candidateAllows = (value: number) => {
     if (model.value?.type !== 'candidate') {
@@ -58,10 +60,16 @@ const candidateAllows = (value: number) => {
     height: 100%
 
     text-align: center
+    user-select: none
 
     font-size: 400%
 
+    &.preset
+        background-color: #f0f0f0
+
 .candidate
+    user-select: none
+
     font-size: 120%
 
 .value::before, .candidate::before

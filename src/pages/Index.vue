@@ -70,19 +70,17 @@ const applyCode = () => {
         } else {
             return '.';
         }
-    });
+    }).join('');
 
     router.replace({ query: { board } });
 };
 
 watch(() => route.query.board, () => {
-    const digits = parseBoard(route.query.board as string);
-
-    console.log(digits);
+    const digits = parseBoard(route.query.board as string ?? '');
 
     sudoku.value = digits.map(d => {
         if (typeof d === 'number') {
-            return { type: 'value', value: d };
+            return { type: 'preset', value: d };
         } else if (Array.isArray(d)) {
             return { type: 'candidate', value: d };
         } else {
