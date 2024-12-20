@@ -12,8 +12,11 @@ export function checkStandardConflicts(state: StandardSudokuSave): number[] {
     const numbers = [
         ...state.initial,
         ...state.cells
-            .filter(c => c[1].type === 'filled')
-            .map(c => [c[0], c[1].value] as [number, number]),
+            .map(c => [
+                c[0],
+                c[1].type === 'filled' ? c[1].value : undefined,
+            ])
+            .filter(c => c[1] !== undefined) as [number, number][],
     ];
 
     for (const [i, n] of numbers) {

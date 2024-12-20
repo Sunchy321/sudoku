@@ -1,12 +1,12 @@
 import { KillerSudoku, StandardSudoku, Sudoku } from './sudoku';
 
-import { intersection, uniq } from 'lodash';
+import { uniq, xor } from 'lodash';
 
 export type SudokuSave = KillerSudokuSave | StandardSudokuSave;
 
 export type Cell = {
     type: 'candidate';
-    value: number[];
+    values: number[];
 } | {
     type: 'filled';
     value: number;
@@ -37,7 +37,7 @@ export function mergeCell(cell: Cell, other: Cell): Cell {
     }
 
     return {
-        type:  'candidate',
-        value: uniq(intersection(cell.value, other.value)).sort(),
+        type:   'candidate',
+        values: uniq(xor(cell.values, other.values)).sort(),
     };
 }

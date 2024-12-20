@@ -12,8 +12,9 @@
 <script setup lang="ts">
 import { h, onMounted } from 'vue';
 
-import { SudokuState } from 'src/model/state';
+import { checkConflicts, SudokuState } from 'src/model/state';
 import { Cell, mergeCell } from 'src/model/save';
+import { debounce } from 'lodash';
 
 const model = defineModel<SudokuState>({ required: true });
 
@@ -30,11 +31,13 @@ const click = (e: MouseEvent) => {
     model.value.focus = i;
 };
 
-const keyup = (e: KeyboardEvent) => {
-    const { key } = e;
+const keyup = debounce((e: KeyboardEvent) => {
+    const { key, code } = e;
 
-    if ('0123456789'.split('').includes(key)) {
-        const input = parseInt(key, 10);
+    console.log(code, code.startsWith('Digit') && '0123456789'.split('').includes(code.slice(-1)));
+
+    if (code.startsWith('Digit') && '0123456789'.split('').includes(code.slice(-1))) {
+        const input = parseInt(code.slice(-1), 10);
 
         if (model.value.focus == null) {
             return;
@@ -48,7 +51,7 @@ const keyup = (e: KeyboardEvent) => {
 
         const newCell = ((): Cell => {
             if (e.shiftKey) {
-                return { type: 'candidate', value: [input] };
+                return { type: 'candidate', values: [input] };
             } else {
                 return { type: 'filled', value: input };
             }
@@ -59,8 +62,21 @@ const keyup = (e: KeyboardEvent) => {
         } else {
             cell[1] = mergeCell(cell[1], newCell);
         }
+    } else if (key === 'Backspace') {
+        if (model.value.focus == null) {
+            return;
+        }
+
+        if (model.value.initial.some(([i]) => i === model.value.focus)) {
+            return;
+        }
+
+        model.value.cells = model.value.cells.filter(([i]) => i !== model.value.focus);
     }
-};
+
+    model.value.cells = model.value.cells.filter(([, v]) => v.type === 'filled' || v.values.length > 0);
+    model.value.conflicts = checkConflicts(model.value);
+}, 100);
 
 const render = () => {
     const rect = h('rect', {
@@ -104,6 +120,7 @@ const render = () => {
             h('text', {
                 'x':                 coord.x + 50,
                 'y':                 coord.y + 50,
+                'class':             model.value.conflicts.includes(i) ? 'number-conflict' : '',
                 'font-size':         80,
                 'text-anchor':       'middle',
                 'dominant-baseline': 'central',
@@ -126,14 +143,15 @@ const render = () => {
                     'x':                 coord.x + 50,
                     'y':                 coord.y + 50,
                     'font-size':         80,
+                    'class':             model.value.conflicts.includes(i) ? 'number-conflict' : '',
                     'text-anchor':       'middle',
                     'dominant-baseline': 'central',
                 }, v.value),
             ];
         } else {
-            return v.value.map((n, j) => h('text', {
-                'x':                 coord.x + 20 + 30 * (j % 3),
-                'y':                 coord.y + 20 + 30 * Math.floor(j / 3),
+            return v.values.map(n => h('text', {
+                'x':                 coord.x + 20 + 30 * ((n - 1) % 3),
+                'y':                 coord.y + 20 + 30 * Math.floor((n - 1) / 3),
                 'font-size':         30,
                 'text-anchor':       'middle',
                 'dominant-baseline': 'central',
@@ -174,9 +192,8 @@ const render = () => {
     }
 
     const svg = h('svg', {
-        width:    1000,
-        height:   1000,
-        tabindex: 0,
+        width:  1000,
+        height: 1000,
     }, [initialCells, cells, focus, rect, rows, columns]);
 
     return svg;
@@ -192,7 +209,10 @@ onMounted(() => {
 
 .sudoku
     height: 100%
-
+    outline: none
     user-select: none
+
+.number-conflict
+    fill: red
 
 </style>
