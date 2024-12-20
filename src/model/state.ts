@@ -1,5 +1,6 @@
 import { uniq } from 'lodash';
 import { StandardSudokuSave, SudokuSave } from './save';
+import { intoCoord } from './basic';
 
 export type SudokuState = SudokuSave & {
     focus?: number;
@@ -20,30 +21,23 @@ export function checkStandardConflicts(state: StandardSudokuSave): number[] {
     ];
 
     for (const [i, n] of numbers) {
-        // check line
-        const line = Math.floor(i / 9);
+        const coord = intoCoord(i);
 
-        const sameLine = numbers.filter(([k]) => Math.floor(k / 9) === line && k !== i);
+        const sameSector = numbers.filter(([k]) => {
+            if (k === i) {
+                return false;
+            }
 
-        if (sameLine.some(([, m]) => m === n)) {
-            conflicts.push(i);
-        }
+            const otherCoord = intoCoord(k);
 
-        // check column
-        const column = i % 9;
+            return (
+                coord.row === otherCoord.row
+                || coord.column === otherCoord.column
+                || coord.block === otherCoord.block
+            );
+        });
 
-        const sameColumn = numbers.filter(([k]) => k % 9 === column && k !== i);
-
-        if (sameColumn.some(([, m]) => m === n)) {
-            conflicts.push(i);
-        }
-
-        // check block
-        const block = Math.floor(line / 3) * 3 + Math.floor(column / 3);
-
-        const sameBlock = numbers.filter(([k]) => Math.floor(k / 27) * 3 + Math.floor((k % 9) / 3) === block && k !== i);
-
-        if (sameBlock.some(([, m]) => m === n)) {
+        if (sameSector.some(([, m]) => m === n)) {
             conflicts.push(i);
         }
     }
